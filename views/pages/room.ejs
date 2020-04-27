@@ -5,25 +5,23 @@
 </head>
 
 <body>
-<div id="loading">Click to start audio</div>
-<div id="container" class="container" style="display: none">
+<div id="container" class="container">
   <h1>
     Welcome to <b><span id="room-name">the venue</span></b>.
   </h1>
 
-  <br/>
-
-  <div id="people-counter">
+  <div id="people-counter" style="min-height: 20px">
     There is nobody else here.
   </div>
 
-  <button id="clap">Clap</button>
+  <button id="loading-button" class="big-button">Click to start audio</button>
+  <button id="clap-button" class="big-button" style="display: none">Clap</button>
 </div>
 
 <script>
   const roomName = unescape(window.location.pathname.replace('/', ''));
   document.getElementById('room-name').innerText = roomName;
-  document.getElementById('clap').addEventListener('click', emitClap);
+  document.getElementById('clap-button').addEventListener('click', emitClap);
 
   const socket = io.connect(window.location.origin);
 
@@ -41,10 +39,10 @@
   }
 
   // audio
-  document.querySelector('#loading').addEventListener('click', async () => {
+  document.querySelector('#loading-button').addEventListener('click', async () => {
     await Tone.start();
-    document.querySelector('#loading').style.display = 'none';
-    document.querySelector('#container').style.display = 'block';
+    document.querySelector('#loading-button').style.display = 'none';
+    document.querySelector('#clap-button').style.display = 'block';
   });
 
   const samples = {
