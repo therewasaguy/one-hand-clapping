@@ -7,9 +7,9 @@
 <body>
 
 <div class="container">
-  <form id="room-form">
+  <form id="room-form" class="form">
     <label for="room-name">Enter your venue name:</label>
-    <input id="room-name" name="room-name">
+    <input id="room-name" name="room-name" style="flex: 1;">
     <button type="submit" class="big-button">Go</button>
   </form>
 </div>
@@ -19,7 +19,7 @@
     e.preventDefault();
 
     const roomName = document.getElementById('room-name').value;
-    window.open('/' + roomName);
+    window.location.href = '/' + roomName;
   });
 </script>
 </body>

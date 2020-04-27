@@ -8,12 +8,18 @@ const io = require('socket.io')(http);
 
 
 io.on('connection', (socket) => {
-  socket.on('disconnect', () => {
-    console.log('user disconnected');
+  socket.on('disconnecting', () => {
+    const rooms = Object.keys(socket.rooms);
+    rooms.forEach(function (roomName) {
+      const numUsersInRoom = io.sockets.adapter.rooms[roomName].length;
+      io.to(roomName).emit('num-users', numUsersInRoom - 1);
+    });
   });
 
   socket.on('join-or-create-room', (roomName) => {
     socket.join(roomName);
+    const numUsersInRoom = io.sockets.adapter.rooms[roomName].length;
+    io.to(roomName).emit('num-users', numUsersInRoom);
   });
 
   socket.on('clap', (clap) => {

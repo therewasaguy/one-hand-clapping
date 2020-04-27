@@ -22,6 +22,7 @@
   const roomName = unescape(window.location.pathname.replace('/', ''));
   document.getElementById('room-name').innerText = roomName;
   document.getElementById('clap-button').addEventListener('click', emitClap);
+  const peopleCounter = document.getElementById('people-counter');
 
   const socket = io.connect(window.location.origin);
 
@@ -31,6 +32,14 @@
 
   socket.on('got-clap', () => {
     playClapSound();
+  });
+
+  socket.on('num-users', (num) => {
+    if (num > 1) {
+      peopleCounter.innerText = `There are ${num} people here`;
+    } else {
+      peopleCounter.innerText = 'There is nobody else here.';
+    }
   });
 
   function emitClap() {
