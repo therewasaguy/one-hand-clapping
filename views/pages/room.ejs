@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <% include ../partials/header.ejs %>
+</head>
+
+<body>
+<div id="loading">Click to start audio</div>
+<div id="container" class="container" style="display: none">
+  <h1>
+    Welcome to <b><span id="room-name">the venue</span></b>.
+  </h1>
+
+  <br/>
+
+  <div id="people-counter">
+    There is nobody else here.
+  </div>
+
+  <button id="clap">Clap</button>
+</div>
+
+<script>
+  const roomName = unescape(window.location.pathname.replace('/', ''));
+  document.getElementById('room-name').innerText = roomName;
+  document.getElementById('clap').addEventListener('click', emitClap);
+
+  const socket = io.connect(window.location.origin);
+
+  socket.on('connect', () => {
+    socket.emit('join-or-create-room', roomName);
+  });
+
+  socket.on('got-clap', () => {
+    playClapSound();
+  });
+
+  function emitClap() {
+    socket.emit('clap');
+    playClapSound();
+  }
+
+  // audio
+  document.querySelector('#loading').addEventListener('click', async () => {
+    await Tone.start();
+    document.querySelector('#loading').style.display = 'none';
+    document.querySelector('#container').style.display = 'block';
+  });
+
+  const samples = {
+    'C3': '/sounds/clap1.mp3',
+    'D3': '/sounds/clap2.mp3',
+    'E3': '/sounds/clap3.mp3',
+    'F3': '/sounds/clap4.mp3',
+    'G3': '/sounds/clap5.mp3',
+    'A4': '/sounds/clap6.mp3',
+    'B4': '/sounds/clap7.mp3'
+  };
+  const notes = Object.keys(samples);
+  const sampler = new Tone.Sampler(samples);
+  const reverb = new Tone.Convolver('/sounds/s1_r1_b.mp3');
+  sampler.connect(reverb);
+  reverb.wet.value = 0.2;
+  reverb.toMaster();
+
+  function playClapSound() {
+    sampler.triggerAttack(notes[Math.floor(Math.random() * notes.length)]);
+  }
+
+</script>
+</body>
+</html>
